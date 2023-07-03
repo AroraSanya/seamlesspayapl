@@ -1,0 +1,116 @@
+{% extends 'cart/base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Payment Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="payment-form">
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number</label>
+                                <input type="text" class="form-control" id="cardNumber" placeholder="Enter card number" value=" " required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expirationDate">Expiration Date</label>
+                                <input type="text" class="form-control" id="expirationDate" placeholder="YYYY-MM"  value=" " required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV</label>
+                                <input type="text" class="form-control" id="cvv" placeholder="Enter CVV" value=" " required>
+                            </div>
+                            <a href="#" onclick="requestpayment()" class="btn btn-primary">Pay with PayPal</a>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the PayPal JavaScript SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=Afokgdz4KbT6REtn6CEXo01meRlynhrQNpkqJWNdlil6EivR1Z6CDtV2s_AJ_zMAHoolhOAnmdMZFlQp&currency=USD"></script>
+    <script>
+        // Create a PayPal Order
+        function requestpayment(){
+            var cardnumber=document.getElementById('cardNumber').value
+            var expirationDate=document.getElementById('expirationDate').value
+            var cvv=document.getElementById('cvv').value
+            var header=
+           
+                 fetch('https://api-m.sandbox.paypal.com/v2/checkout/orders', {
+                    method: 'POST',
+                    headers:  {
+               
+                        'Content-Type':"application/json",
+                        'Authorization':"Bearer A21AAISf-ATqJcnal93DH3OTYTuduRJBz-_NCZfnsZzs7DJHFWJ5kgSKgQTisAcHTzl5DBBc9c95HW1uErXeYFpqxZHlAQZBA",
+                        'PayPal-Request-Id':{{id | safe}}+'o'
+                     },
+                    body: JSON.stringify( {
+                
+                        "intent": "CAPTURE", 
+                         "purchase_units": [
+                               { 
+                                    "amount": { 
+                               "currency_code": "USD", "value": "100.00"
+                                } 
+                           } 
+                           ],
+                            "payment_source":{
+                             "card":{
+                                 "name":"visa",
+                                 "number":cardnumber,
+                                 "security_code":cvv,
+                                 "expiry":expirationDate,
+                                 "billing_address":{
+                                     "address_line_1":"ftyfhhj",
+                                     "address_line_2":"dfewdfew",
+                                     "admin_area_2":"edqwdqw",
+                                     "admin_area_1":"dqwdeqwed",
+                                     "postal_code":1111111,
+                                     "country_code":"US"
+                                 }
+                             }
+                             
+                         
+                            
+                            
+                               }
+                      }
+                
+                      ) }).then(response => response.json())
+                  .then(data => {
+                    console.log('Success:', data);
+                   
+  var dat = {order_id:{{id|safe}}, transaction_id:data.id,status:data.status, dat1:JSON.stringify(data)}
+  console.log(dat,'dat')
+    let url = '/savetransaction'
+    fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken
+        },
+
+        body: JSON.stringify(dat),
+      }).then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+                  })
+                  .catch((error) => {
+                    console.error('Error:', error);
+                  });
+
+
+        }
+    </script>
+</body>
+</html>
+{% endblock %}

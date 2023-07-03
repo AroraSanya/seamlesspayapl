@@ -1,0 +1,137 @@
+{% extends 'cart/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Shipping-Form Section -->
+        <div class="col-md-6">
+            <div class="uk-width-xlarge uk-margin">
+                <div class="uk-card uk-card-small uk-card-default uk-card-body">
+                    <form class="row g-3" id="shipping-form">
+                        <div id="shippingInfo">
+                            <h2>You are almost done shopping!!</h2>
+                        </div>
+                        <a onclick='createOrder({{cart.grandtotal}})'  href="#" class="btn btn-primary">Pay with Debit/Credit Card</a>       
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Section -->
+        <div class="col-md-6">
+            <div class="uk-width-xlarge uk-margin">
+                <div class="uk-card uk-card-small uk-card-default uk-card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th colspan="2"><h2>Order Summary</h2></th>
+                                <th><h2>Total: ${{ cart.grandtotal|floatformat:'2' }}</h2></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <script>
+                                var totalProducts=0
+                            </script>
+                            {% for item in cartitems %}
+                            
+                            <script>
+                                 totalProducts++
+                            </script>
+                            <tr>
+                                <td><div id="cart_image"><img src="{{ item.product.image.url }}"></div></td>
+                                <td><h3>{{ item.product.name }}</h3></td>
+                                <td><h3>x{{ item.quantity }}</h3></td>
+                                <td><h3>${{ item.product.price }}</h3></td>
+                                <td><h3></h3></td>
+                                <td><h3>${{ item.subtotal }}</h3></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Credit Card Payment -->
+<div class="modal fade" id="creditCardModal" tabindex="-1" role="dialog" aria-labelledby="creditCardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="creditCardModalLabel">Enter Credit Card Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="creditCardForm">
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" class="form-control" id="cardNumber" placeholder="Enter card number">
+                    </div>
+                    <div class="form-group">
+                        <label for="expirationDate">Expiration Date</label>
+                        <input type="text" class="form-control" id="expirationDate" placeholder="Enter expiration date">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" class="form-control" id="cvv" placeholder="Enter CVV">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submitCreditCardForm()">Submit</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+<!-- Include jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Include Bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- Include the PayPal JavaScript SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=Afokgdz4KbT6REtn6CEXo01meRlynhrQNpkqJWNdlil6EivR1Z6CDtV2s_AJ_zMAHoolhOAnmdMZFlQp&currency=USD&disable-funding=card"></script>
+<script src="https://js.braintreegateway.com/web/dropin/1.38.1/js/dropin.js"></script>
+
+<script>
+    
+    function createOrder(grandTotal){
+        
+            var name ='dfsd'
+           var price = grandTotal
+            var status ='inactive'
+           
+           var product = totalProducts     
+          let url = '/createorder'
+          fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({name, price,status, product}),
+          }).then(response => response.json())
+          .then(data => {
+            console.log('Success:', data);
+            window.location.replace('/credit/'+data)
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+          
+          
+        {% for item in cartitems %}
+
+        {% endfor %}
+    }
+
+    
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'cart/base.html' %}
+
+{% block content %}
+
+
+  <!-- Transaction Section -->
+  <div class='container' style='margin-top: 50px; width: 70%'>
+    <table class="table table-light table-hover">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col"><h3><strong>Order ID</strong></h3></th>
+          <th scope="col"><h3><strong>Transaction ID</strong></h3></th>
+          <th scope="col"><h3><strong>Status</strong></h3></th>
+          <th scope="col"><h3><strong>Payment Source</strong></h3></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row"></th>
+          <td><h3>{{ transaction.order_id }}</h3></td>
+          <td><h3>{{ transaction.transaction_id }}</h3></td>
+          <td><h3>{{ transaction.status }}</h3></td>
+          <td><h3>{{ transaction.payment_source.card.brand }} ending in {{ transaction.payment_source.card.last_digits }}</h3></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
